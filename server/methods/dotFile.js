@@ -19,10 +19,10 @@ Meteor.methods({
 			_.each(pub_val.author_ids, function(auth_id) { 
 
 				var auth_val = Authors.findOne({_id: auth_id})
-				var auth_string = auth_val._id + ' ' + '[label="'+auth_val.name+'", type="author"]\n';  
+				  var auth_string = 'A' + auth_val._id + ' ' + '[label="'+auth_val.name.replace(/"/g, "'")+'", type="author"]\n';  
 				nodes.push(auth_string); 
 
-				var edge = pub_val._id + ' -> ' + auth_val._id + ' [edge_type=author]\n' ;
+				  var edge = "P" + pub_val._id + ' -> ' + "A" + auth_val._id + ' [edge_type=author]\n' ;
 				edges.push(edge);
 			});		
 			
@@ -31,26 +31,26 @@ Meteor.methods({
 
 
 		//get every paper that cites one the papers in this project
-		Edges.find({target:{$in:pub_ids}, type:'cites'}).forEach(function(cite_edge_val){
-			var edge = cite_edge_val.source + ' -> ' + cite_edge_val.target + ' [edge_type=cites]\n' ;
+		Edges.find({type:'cites'}).forEach(function(cite_edge_val){
+			var edge = 'P' + cite_edge_val.source + ' -> ' + 'P' + cite_edge_val.target + ' [edge_type=cites]\n' ;
 			citing_pub_ids.push(cite_edge_val.source); 
+				edges.push(edge);
 		});
 
 	
-
 		Publications.find({_id: {$in: citing_pub_ids}}).forEach(function(pub_val){
-			var pub_string = pub_val._id + ' ' + '[label="'+pub_val.title+'", type="publication"]\n';  
+			  var pub_string = 'P' + pub_val._id + ' ' + '[label="'+pub_val.title.replace(/"/g, "'")+'", type="publication"]\n';  
 			nodes.push(pub_string); 
 			
 			//add an edge and a node for every author of this publication
 			_.each(pub_val.author_ids, function(auth_id) { 
 
 				var auth_val = Authors.findOne({_id: auth_id})
-				var auth_string = auth_val._id + ' ' + '[label="'+auth_val.name+'", type="author"]\n';  
+				  var auth_string = 'A' + auth_val._id + ' ' + '[label="'+auth_val.name.replace(/"/g, "'")+'", type="author"]\n';  
 				nodes.push(auth_string); 
 
-				var edge = pub_val._id + ' -> ' + auth_val._id + ' [edge_type=cites]\n' ;
-				edges.push(edge);
+				  var edge = 'P' + pub_val._id + ' -> ' + 'A' + auth_val._id + ' [edge_type=author]\n' ;
+				  edges.push(edge);
 			});	
 		});
 
